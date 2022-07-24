@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('thing.list') }}">Things</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('thing.view', id=thing.id) }}">{{ thing.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete</li>
+            </ol>
+        </nav>
+        {{ super() }}
+        <h1>{{title}}</h1>
+        <hr>
+        <p class="lead">Are you sure you want to delete {{ thing.name }}?</p>
+        {% include '_thing_description.html' %}
+        <form action="" method="post" novalidate>
+            {{ form.csrf_token }}
+            <div class="d-grid gap-3 d-sm-block">
+                <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i> Yes, delete {{ thing.name }}</button>
+                <a class="btn btn-secondary" href="{{ request.referrer }}"><i class="bi bi-chevron-left"></i> Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

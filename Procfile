@@ -1,0 +1,1 @@
+web: flask db upgrade; gunicorn flask_bootstrap_aio:app --log-file -

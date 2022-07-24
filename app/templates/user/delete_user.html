@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {{ super() }}
+        <h1>{{title}}</h1>
+        <hr>
+        <p class="lead">Are you sure you want to delete {{ user.name }}?</p>
+        {% include '_user_description.html' %}
+        <form action="" method="post" novalidate>
+            {{ form.csrf_token }}
+            <div class="d-grid gap-3 d-sm-block">
+                <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i> Yes, delete {{ user.name }}</button>
+                <a class="btn btn-secondary" href="{{ request.referrer }}"><i class="bi bi-chevron-left"></i> Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

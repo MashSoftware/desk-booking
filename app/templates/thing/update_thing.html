@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('thing.list') }}">Things</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('thing.view', id=thing.id) }}">{{ thing.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+        {{ super() }}
+        <h1>{{title}}</h1>
+        <hr>
+        {% include '_thing_form.html' %}
+    </div>
+</div>
+{% endblock %}

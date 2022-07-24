@@ -1,0 +1,17 @@
+<dl class="row">
+    {% if current_user.email_address == user.email_address %}
+    <dt class="col-sm-3">Email address</dt>
+    <dd class="col-sm-9">{{ user.email_address }}</dd>
+    {% endif %}
+    <dt class="col-sm-3">Timezone</dt>
+    <dd class="col-sm-9">{{ user.timezone }}</dd>
+
+    <dt class="col-sm-3">Created</dt>
+    <dd class="col-sm-9">{{ user.created_at.strftime("%d/%m/%Y %H:%M:%S") }}</dd>
+
+    <dt class="col-sm-3">Last log in</dt>
+    <dd class="col-sm-9">{{ user.login_at.strftime("%d/%m/%Y %H:%M:%S") }}</dd>
+
+    <dt class="col-sm-3">Last updated</dt>
+    <dd class="col-sm-9">{{ user.updated_at.strftime("%d/%m/%Y %H:%M:%S") if user.updated_at else "Never" }}</dd>
+</dl>

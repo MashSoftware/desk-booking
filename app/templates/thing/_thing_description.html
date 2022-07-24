@@ -1,0 +1,10 @@
+<dl class="row">
+    <dt class="col-sm-3">Colour</dt>
+    <dd class="col-sm-9">{{ thing.colour | title }}</dd>
+
+    <dt class="col-sm-3">Created</dt>
+    <dd class="col-sm-9">By <a href="{{ url_for('user.view', id=thing.user_id)}}">{{ thing.user.name }}</a> on {{ thing.created_at.strftime("%d/%m/%Y") }} at {{ thing.created_at.strftime("%H:%M:%S") }}</dd>
+
+    <dt class="col-sm-3">Last updated</dt>
+    <dd class="col-sm-9">{{ thing.updated_at.strftime("%d/%m/%Y %H:%M:%S") if thing.updated_at else "Never" }}</dd>
+</dl>

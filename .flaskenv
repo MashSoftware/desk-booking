@@ -1,0 +1,6 @@
+FLASK_APP=flask_bootstrap_aio.py
+FLASK_ENV=development
+FLASK_RUN_PORT=5000
+REDIS_URL=memory://
+SECRET_KEY=276adfa5b51089673761855899c5b82f701787f9fffdce4f27ee0eeb6fcb5a8c
+TIMEOUT=5
