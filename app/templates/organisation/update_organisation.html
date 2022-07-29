@@ -4,7 +4,7 @@
     <div class="col-md-8">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url_for('organisation.view', id=organisation.id) }}">{{ organisation.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('organisation.view') }}">{{ current_user.organisation.name }}</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
         </nav>

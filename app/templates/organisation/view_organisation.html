@@ -6,10 +6,10 @@
         <h1 class="text-truncate">{{ title }}</h1>
         <hr>
         {% include '_organisation_description.html' %}
-        {% if organisation.id == current_user.organisation.id and current_user.role == "admin" %}
+        {% if current_user.role == "admin" %}
         <div class="d-grid gap-3 d-sm-block">
-            <a class="btn btn-primary" href="{{ url_for('organisation.edit', id=organisation.id) }}"><i class="bi bi-pencil-square"></i> Edit</a>
-            <a class="btn btn-danger" href="{{ url_for('organisation.delete', id=organisation.id) }}"><i class="bi bi-trash"></i> Delete</a>
+            <a class="btn btn-primary" href="{{ url_for('organisation.edit') }}"><i class="bi bi-pencil-square"></i> Edit</a>
+            <a class="btn btn-danger" href="{{ url_for('organisation.delete') }}"><i class="bi bi-trash"></i> Delete</a>
         </div>
         {% endif %}
     </div>

@@ -46,7 +46,7 @@ def signup():
             db.session.add(current_user)
             db.session.commit()
             flash(f"Welcome to {organisation.name}.", "success")
-            return redirect(url_for("organisation.view", id=organisation.id))
+            return redirect(url_for("organisation.view"))
 
     return render_template("sign_up_form.html", title="Sign up", form=form)
 
@@ -55,7 +55,7 @@ def signup():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email_address=form.email_address.data).first()
+        user = User.query.filter_by(email_address=form.email_address.data.lower().strip()).first()
         if user is None or not user.check_password(form.password.data):
             current_app.logger.warning("Failed login attempt")
             flash("Invalid email address or password.", "danger")

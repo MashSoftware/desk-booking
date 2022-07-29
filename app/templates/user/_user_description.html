@@ -5,7 +5,7 @@
     <dt class="col-sm-3">Organisation</dt>
     <dd class="col-sm-9">
     {% if user.organisation %}
-        <a href="{{ url_for('organisation.view', id=user.organisation.id) }}">{{ user.organisation.name }}</a>
+        <a href="{{ url_for('organisation.view') }}">{{ user.organisation.name }}</a>
     {% else %}
         None
     {% endif %}

@@ -25,10 +25,8 @@ class OrganisationForm(FlaskForm):
 
     def validate_domain(self, domain):
         # If organisation has changed domains, prevent duplication with another organisation
-        if domain.data != current_user.organisation.domain:
-            org = Organisation.query.filter_by(domain=domain.data).first()
-            if org is not None:
-                raise ValidationError("Domain name is already in use")
+        if current_user.organisation and current_user.organisation.domain != domain.data:
+           raise ValidationError("Domain name is already in use")
 
 
 class OrganisationDeleteForm(FlaskForm):

@@ -31,7 +31,7 @@ def create():
         db.session.add(current_user)
         db.session.commit()
         flash(
-            f"<a href='{url_for('organisation.view', id=new_organisation.id)}' class='alert-link'>{new_organisation.name}</a> has been created.",
+            f"<a href='{url_for('organisation.view')}' class='alert-link'>{new_organisation.name}</a> has been created.",
             "success",
         )
         return redirect(url_for("main.index"))
@@ -39,68 +39,58 @@ def create():
     return render_template("create_organisation.html", title="Create a new organisation", form=form)
 
 
-@bp.route("/<uuid:id>", methods=["GET"])
+@bp.route("/", methods=["GET"])
 @login_required
 @limiter.limit("2 per second", key_func=lambda: current_user.id)
-def view(id):
-    """Get a Organisation with a specific ID."""
-
-    # Prevent authenticated users from viewing other organisations
-    if current_user.organisation_id != str(id):
-        raise Forbidden()
-
-    organisation = Organisation.query.get_or_404(str(id))
-
-    return render_template("view_organisation.html", title=organisation.name, organisation=organisation)
+def view():
+    """View the authenticated users organisation."""
+    return render_template("view_organisation.html", title=current_user.organisation.name)
 
 
-@bp.route("/<uuid:id>/edit", methods=["GET", "POST"])
+@bp.route("/edit", methods=["GET", "POST"])
 @login_required
 @limiter.limit("2 per second", key_func=lambda: current_user.id)
-def edit(id):
-    """Edit a Organisation with a specific ID."""
+def edit():
+    """Edit the authenticated users organisation."""
 
-    # Prevent authenticated users from editing other organisations
-    if current_user.organisation_id != str(id) or current_user.role != "admin":
+    # Only allow admins to edit their own organisation
+    if current_user.role != "admin":
         raise Forbidden()
 
-    organisation = Organisation.query.get_or_404(str(id))
     form = OrganisationForm()
 
     if form.validate_on_submit():
-        organisation.name = form.name.data.strip()
-        organisation.domain = form.domain.data.lower().strip()
-        organisation.updated_at = pytz.utc.localize(datetime.utcnow())
-        db.session.add(organisation)
+        current_user.organisation.name = form.name.data.strip()
+        current_user.organisation.domain = form.domain.data.lower().strip()
+        current_user.organisation.updated_at = pytz.utc.localize(datetime.utcnow())
+        db.session.add(current_user)
         db.session.commit()
         flash(
-            f"Your changes to <a href='{url_for('organisation.view', id=organisation.id)}' class='alert-link'>{organisation.name}</a> have been saved.",
+            f"Your changes to <a href='{url_for('organisation.view')}' class='alert-link'>{current_user.organisation.name}</a> have been saved.",
             "success",
         )
         return redirect(url_for("main.index"))
     elif request.method == "GET":
-        form.name.data = organisation.name
-        form.domain.data = organisation.domain
+        form.name.data = current_user.organisation.name
+        form.domain.data = current_user.organisation.domain
 
     return render_template(
         "update_organisation.html",
         title="Edit organisation",
         form=form,
-        organisation=organisation,
     )
 
 
-@bp.route("/<uuid:id>/delete", methods=["GET", "POST"])
+@bp.route("/delete", methods=["GET", "POST"])
 @login_required
 @limiter.limit("2 per second", key_func=lambda: current_user.id)
-def delete(id):
-    """Delete a Organisation with a specific ID."""
+def delete():
+    """Delete the authenticated users organisation."""
 
-    # Prevent authenticated users from deleting other organisations
-    if current_user.organisation_id != str(id) or current_user.role != "admin":
+    # Only allow admins to delete their own organisation
+    if current_user.role != "admin":
         raise Forbidden()
 
-    organisation = Organisation.query.get_or_404(str(id))
     form = OrganisationDeleteForm()
 
     if request.method == "GET":
@@ -108,10 +98,10 @@ def delete(id):
             "delete_organisation.html",
             title="Delete organisation",
             form=form,
-            organisation=organisation,
         )
     elif request.method == "POST":
-        db.session.delete(organisation)
+        org = current_user.organisation.name
+        db.session.delete(current_user.organisation)
         db.session.commit()
-        flash(f"{organisation.name} has been deleted.", "success")
+        flash(f"{org} has been deleted.", "success")
         return redirect(url_for("main.index"))

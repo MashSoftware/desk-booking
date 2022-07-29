@@ -29,12 +29,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if current_user.is_authenticated %}
+                    {% if current_user.organisation_id %}
                     <li class="nav-item">
                         <a class="nav-link {% if url_for('user.signup', _external=True) == request.base_url %}active{% endif %}" href="#"><i class="bi bi-person-workspace"></i> My bookings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if url_for('organisation.view',id=current_user.organisation_id, _external=True) == request.base_url %}active{% endif %}" href="{{ url_for('organisation.view', id=current_user.organisation_id) }}"><i class="bi bi-building"></i> {{ current_user.organisation.name }}</a>
+                        <a class="nav-link {% if url_for('organisation.view', _external=True) == request.base_url %}active{% endif %}" href="{{ url_for('organisation.view') }}"><i class="bi bi-building"></i> {{ current_user.organisation.name }}</a>
                     </li>
+                    {% endif %}
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
