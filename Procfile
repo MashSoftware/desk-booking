@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn flask_bootstrap_aio:app --log-file -
+web: flask db upgrade; gunicorn desk_booking:app --log-file -

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {{ super() }}
+        <h1>{{title}}</h1>
+        <hr>
+        {% include '_organisation_form.html' %}
+    </div>
+</div>
+{% endblock %}

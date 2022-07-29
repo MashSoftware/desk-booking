@@ -7,7 +7,7 @@ from werkzeug.exceptions import Forbidden
 from werkzeug.urls import url_parse
 
 from app import db, limiter
-from app.models import User
+from app.models import Organisation, User
 from app.user import bp
 from app.user.forms import LoginForm, SignupForm, UserDeleteForm, UserForm
 
@@ -15,7 +15,7 @@ from app.user.forms import LoginForm, SignupForm, UserDeleteForm, UserForm
 @bp.route("/signup", methods=["GET", "POST"])
 def signup():
     if current_user.is_authenticated:
-        return redirect(url_for("entry.weekly"))
+        return redirect(url_for("user.view", id=current_user.id))
     form = SignupForm()
     if form.validate_on_submit():
         user = User(
@@ -23,6 +23,7 @@ def signup():
             email_address=form.email_address.data,
             password=form.password.data,
             timezone=form.timezone.data,
+            role="user",
         )
         user.login_at = pytz.utc.localize(datetime.utcnow())
         db.session.add(user)
@@ -30,8 +31,23 @@ def signup():
         current_app.logger.info(f"User {user.id} created")
         login_user(user)
         current_app.logger.info(f"User {current_user.id} logged in")
-        flash(f"Welcome {current_user.name}", "success")
-        return redirect(url_for("thing.list"))
+
+        # If users email address is in an unrecognised domain, ask them to create the organisation,
+        # otherwise, add them to the existing organisation
+        organisation = Organisation.query.filter_by(domain=current_user.email_address.split("@")[1]).first()
+        if organisation is None:
+            flash(
+                "Looks like you're the first person here from your organisation.",
+                "success",
+            )
+            return redirect(url_for("organisation.create"))
+        else:
+            current_user.organisation_id = organisation.id
+            db.session.add(current_user)
+            db.session.commit()
+            flash(f"Welcome to {organisation.name}.", "success")
+            return redirect(url_for("organisation.view", id=organisation.id))
+
     return render_template("sign_up_form.html", title="Sign up", form=form)
 
 
@@ -51,7 +67,7 @@ def login():
         current_app.logger.info(f"User {current_user.id} logged in")
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
-            next_page = url_for("thing.list")
+            next_page = url_for("main.index")
         flash(f"{current_user.name} logged in.", "success")
         return redirect(next_page)
     elif request.method == "GET" and current_user.is_authenticated:
@@ -75,6 +91,10 @@ def view(id):
     """Get a User with a specific ID."""
     user = User.query.get_or_404(str(id))
 
+    # Prevent authenticated users from viewing users in other organisations
+    if user.organisation_id != current_user.organisation_id:
+        raise Forbidden()
+
     return render_template("view_user.html", title=user.name, user=user)
 
 
@@ -83,6 +103,8 @@ def view(id):
 @limiter.limit("2 per second", key_func=lambda: current_user.id)
 def edit(id):
     """Edit a User with a specific ID."""
+
+    # Prevent authenticated users from editing other users
     if str(id) != current_user.id:
         raise Forbidden()
 
@@ -109,6 +131,8 @@ def edit(id):
 @limiter.limit("2 per second", key_func=lambda: current_user.id)
 def delete(id):
     """Delete a User with a specific ID."""
+
+    # Prevent authenticated users from deleting other users
     if str(id) != current_user.id:
         raise Forbidden()
 

@@ -1,4 +1,4 @@
-# Flask Bootstrap All-in-One Template
+# Mash Desk Booking
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/N4N33KKEF)
 
@@ -22,8 +22,8 @@ sudo service postgresql start
 sudo -su postgres
 psql
 create user mash with password 'mash';
-createdb thing;
-grant all privileges on database thing to mash;
+createdb desk_booking;
+grant all privileges on database desk_booking to mash;
 ```
 
 ### Create venv and install requirements

@@ -7,40 +7,10 @@
         <hr>
         {% include '_user_description.html' %}
         {% if current_user.id == user.id %}
-        <div class="d-grid gap-3 d-sm-block mb-3">
+        <div class="d-grid gap-3 d-sm-block">
             <a class="btn btn-primary" href="{{ url_for('user.edit', id=current_user.id) }}"><i class="bi bi-pencil-square"></i> Edit</a>
             <a class="btn btn-danger" href="{{ url_for('user.delete', id=current_user.id) }}"><i class="bi bi-trash"></i> Delete</a>
         </div>
-        {% endif %}
-        {% if user.things %}
-        <h2>Things</h2>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Colour</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for thing in user.things %}
-                        <tr>
-                            <th scope="row"><a href="{{ url_for('thing.view', id=thing.id) }}">{{ thing.name }}</a></th>
-                            <td>{{ thing.colour | title }}</td>
-                            <td>
-                                {% if thing in current_user.things %}
-                                <a href="{{ url_for('thing.edit', id=thing.id) }}"><i class="bi bi-pencil-square"></i> Edit</a><br>
-                                <a href="{{ url_for('thing.delete', id=thing.id) }}" class="link-danger"><i class="bi bi-trash"></i> Delete</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="lead">0 things</p>
         {% endif %}
     </div>
 </div>

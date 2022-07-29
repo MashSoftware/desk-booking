@@ -6,6 +6,21 @@ from wtforms.validators import Email, EqualTo, InputRequired, Length, Optional, 
 
 from app.models import User
 
+disallowed_domains = [
+    "aol",
+    "gmail",
+    "googlemail",
+    "hotmail",
+    "icloud",
+    "live",
+    "msn",
+    "outlook",
+    "pm",
+    "proton",
+    "protonmail",
+    "yahoo",
+]
+
 
 class SignupForm(FlaskForm):
     tz_tuples = []
@@ -15,13 +30,13 @@ class SignupForm(FlaskForm):
     name = StringField("Full name", validators=[InputRequired("Enter your full name")])
 
     email_address = StringField(
-        "Email address",
+        "Organisation email address",
         validators=[
             InputRequired(message="Enter your email address"),
             Email(granular_message=True, check_deliverability=True),
             Length(max=256, message="Email address must be 256 characters or fewer"),
         ],
-        description="We'll never share your email with anyone else.",
+        description="Your organisation, company, business or institution email address.",
     )
     password = PasswordField(
         "Create a password",
@@ -46,6 +61,12 @@ class SignupForm(FlaskForm):
     )
 
     def validate_email_address(self, email_address):
+        # Prevent users from signing up with personal email addresses
+        for domain in disallowed_domains:
+            if domain in email_address.data.split("@")[1]:
+                raise ValidationError("Email address must not be a personal address.")
+
+        # Prevent users from signing up with an email address that is already in use
         user = User.query.filter_by(email_address=email_address.data).first()
         if user is not None:
             raise ValidationError("Email address is already in use, please log in")
@@ -79,13 +100,13 @@ class UserForm(FlaskForm):
     name = StringField("Full name", validators=[InputRequired("Enter your full name")])
 
     email_address = StringField(
-        "Email address",
+        "Organisation email address",
         validators=[
             InputRequired(message="Enter your email address"),
             Email(granular_message=True, check_deliverability=True),
-            Length(max=256, message="Email address must be 256 characters or fewer"),
+            Length(max=255, message="Email address must be 255 characters or fewer"),
         ],
-        description="We'll never share your email with anyone else.",
+        description="Your organisation, company, business or institution email address.",
     )
 
     timezone = SelectField(
@@ -96,10 +117,15 @@ class UserForm(FlaskForm):
     )
 
     def validate_email_address(self, email_address):
+        # If user has changed email address, prevent duplication with another user
         if email_address.data != current_user.email_address:
             user = User.query.filter_by(email_address=email_address.data).first()
             if user is not None:
                 raise ValidationError("Email address is already in use")
+
+        # Prevent users from changing email address domains outside of their organisation domain
+        if email_address.data.split("@")[1] != current_user.organisation.domain:
+            raise ValidationError(f"Email address must be in the {current_user.organisation.domain} domain")
 
 
 class UserDeleteForm(FlaskForm):

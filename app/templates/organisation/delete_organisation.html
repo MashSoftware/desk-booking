@@ -4,20 +4,19 @@
     <div class="col-md-8">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url_for('thing.list') }}">Things</a></li>
-                <li class="breadcrumb-item"><a href="{{ url_for('thing.view', id=thing.id) }}">{{ thing.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('organisation.view', id=organisation.id) }}">{{ organisation.name }}</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Delete</li>
             </ol>
         </nav>
         {{ super() }}
         <h1>{{title}}</h1>
         <hr>
-        <p class="lead">Are you sure you want to delete {{ thing.name }}?</p>
-        {% include '_thing_description.html' %}
+        <p class="lead">Are you sure you want to delete {{ organisation.name }}?</p>
+        {% include '_organisation_description.html' %}
         <form action="" method="post" novalidate>
             {{ form.csrf_token }}
             <div class="d-grid gap-3 d-sm-block">
-                <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i> Yes, delete {{ thing.name }}</button>
+                <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i> Yes, delete {{ organisation.name }} and {{ organisation.users | length }} users</button>
                 <a class="btn btn-secondary" href="{{ request.referrer }}"><i class="bi bi-chevron-left"></i> Cancel</a>
             </div>
         </form>
